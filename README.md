@@ -11,17 +11,15 @@ A real-time AI-powered tool that red-teams Product Requirements Documents (PRDs)
 
 ## 📦 Two Versions Included
 
-### 1. **Demo Version** (`spec-check-assistant.html`)
-**USE THIS FOR:** Portfolio demos, interviews, GitHub Pages hosting
+### 1. **Demo Version** (`index.html`)
+**USING THIS FOR:** Portfolio demos, interviews, GitHub Pages hosting
 
 ✅ **Features:**
 - Smart keyword-based mock analysis
 - Instant results (no API needed)
 - Works offline
 - Free forever
-- Perfect for showcasing your product thinking
-
-🎯 **Best for:** Sharing with hiring managers, adding to your portfolio site
+- I'm using this in my interviews or mentor meetings to showcase my product thinking
 
 ---
 
