@@ -1,0 +1,1325 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.3">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Spec-Check Premortem Assistant [DEMO]&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://unpkg.com/@babel/standalone/babel.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Instrument+Serif:ital@0;1&amp;family=DM+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>* {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>box-sizing: border-box;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>:root {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--bg-primary: #0a0e17;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--bg-secondary: #141922;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--bg-tertiary: #1a2030;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--text-primary: #e8edf4;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--text-secondary: #9ba5b8;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--text-tertiary: #6b7687;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--accent-blue: #4a9eff;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--accent-yellow: #ffc247;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--accent-red: #ff6b6b;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--accent-green: #51cf66;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--border-color: #2a3444;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--shadow-color: rgba(0, 0, 0, 0.4);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-family: 'DM Sans', sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--bg-primary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-primary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>overflow: hidden;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>line-height: 1.6;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.app-container {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>height: 100vh;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: relative;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Header */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.app-header {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: absolute;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>top: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>left: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>right: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>height: 60px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--bg-secondary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-bottom: 1px solid var(--border-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 0 24px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>z-index: 100;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 2px 8px var(--shadow-color);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.app-logo {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-family: 'Instrument Serif', serif;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 22px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 600;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-primary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>letter-spacing: -0.5px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.app-logo span {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--accent-blue);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.header-actions {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-left: auto;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>gap: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.header-btn {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 8px 16px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--bg-tertiary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: 1px solid var(--border-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 6px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-secondary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 13px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 500;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: all 0.2s;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.header-btn:hover {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--bg-primary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-primary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-color: var(--accent-blue);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.header-btn.primary {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--accent-blue);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-color: var(--accent-blue);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.header-btn.primary:hover {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: #3d8be8;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-color: #3d8be8;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Main Content Area */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.main-content {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 60px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex: 1;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>overflow: hidden;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Editor Pane */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.editor-pane {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex: 1;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--bg-secondary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-right: 1px solid var(--border-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex-direction: column;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>overflow: hidden;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.editor-header {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 20px 24px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-bottom: 1px solid var(--border-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--bg-tertiary);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.editor-title {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-family: 'JetBrains Mono', monospace;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 500;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-tertiary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-transform: uppercase;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>letter-spacing: 1.5px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.editor-content {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex: 1;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>overflow-y: auto;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 32px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.markdown-editor {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>min-height: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: transparent;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-primary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-family: 'DM Sans', sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 15px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>line-height: 1.8;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>resize: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>outline: none;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.markdown-editor::placeholder {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-tertiary);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Sidebar */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.sidebar {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 420px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--bg-primary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex-direction: column;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>overflow: hidden;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.sidebar-section {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 24px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-bottom: 1px solid var(--border-color);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.section-title {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-family: 'JetBrains Mono', monospace;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 11px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 600;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-tertiary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-transform: uppercase;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>letter-spacing: 1.5px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.section-header {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>justify-content: space-between;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.filter-controls {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>gap: 6px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.filter-btn {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 4px 10px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--bg-tertiary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: 1px solid var(--border-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 5px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 500;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-secondary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: all 0.2s;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-transform: uppercase;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>letter-spacing: 0.5px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.filter-btn:hover {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--bg-secondary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-primary);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.filter-btn.active {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--accent-blue);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-color: var(--accent-blue);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.analyze-section {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 20px 24px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-bottom: 1px solid var(--border-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--bg-secondary);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.analyze-btn {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--accent-blue);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 13px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 600;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: all 0.3s;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>gap: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.analyze-btn:hover {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: #3d8be8;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transform: translateY(-1px);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.analyze-btn:active {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transform: translateY(0);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.analyze-btn.analyzing {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--bg-tertiary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: not-allowed;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.spinner {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>height: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: 2px solid rgba(255, 255, 255, 0.3);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-top-color: white;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 50%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>animation: spin 0.8s linear infinite;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>@keyframes spin {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>to { transform: rotate(360deg); }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Radar Chart */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.radar-container {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: relative;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>height: 280px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.radar-canvas {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>max-width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>max-height: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.radar-hint {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: absolute;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>bottom: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>left: 50%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transform: translateX(-50%);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-tertiary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>opacity: 0.6;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Overall Score */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.overall-score {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--bg-secondary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.score-label {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-tertiary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 500;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-transform: uppercase;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>letter-spacing: 1px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.score-value {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-family: 'Instrument Serif', serif;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 48px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 600;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>line-height: 1;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));</p>
+<p class="p1"><span class="Apple-converted-space">            </span>-webkit-background-clip: text;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>-webkit-text-fill-color: transparent;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-clip: text;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.score-status {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 13px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-secondary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 4px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Cards Section */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.cards-section {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex: 1;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>overflow-y: auto;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 24px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding-top: 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.cards-container {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex-direction: column;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>gap: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.insight-card {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--bg-secondary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: 1px solid var(--border-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: relative;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>overflow: hidden;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>@keyframes slideIn {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>from {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>opacity: 0;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>transform: translateY(20px);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>to {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>opacity: 1;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>transform: translateY(0);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.insight-card:nth-child(1) { animation-delay: 0.05s; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.insight-card:nth-child(2) { animation-delay: 0.1s; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.insight-card:nth-child(3) { animation-delay: 0.15s; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.insight-card:nth-child(4) { animation-delay: 0.2s; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.insight-card:nth-child(5) { animation-delay: 0.25s; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.insight-card:nth-child(6) { animation-delay: 0.3s; }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.insight-card:hover {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transform: translateY(-2px);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 8px 24px var(--shadow-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-color: currentColor;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.insight-card.edge-case {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--card-color: var(--accent-blue);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.insight-card.stakeholder {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--card-color: var(--accent-yellow);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.insight-card.metric {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--card-color: var(--accent-red);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.insight-card.mental-model {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--card-color: #a78bfa;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.insight-card::before {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>content: '';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: absolute;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>left: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>top: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>bottom: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 4px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--card-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 10px 0 0 10px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.card-header {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>align-items: flex-start;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>gap: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.card-icon {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 18px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>line-height: 1;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex-shrink: 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.card-meta {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex: 1;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.card-type {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 11px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 600;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--card-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-transform: uppercase;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>letter-spacing: 1px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 6px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.card-title {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 600;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-primary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>line-height: 1.4;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.card-severity {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-left: auto;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>gap: 3px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.severity-dot {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 6px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>height: 6px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 50%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--card-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>opacity: 0.3;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.severity-dot.active {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>opacity: 1;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.card-actions {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>gap: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding-top: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-top: 1px solid var(--border-color);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.card-action-btn {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 6px 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--bg-tertiary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: 1px solid var(--border-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 6px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 11px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 500;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-secondary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: all 0.2s;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.card-action-btn:hover {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--bg-primary);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-color: var(--card-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--card-color);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.card-action-btn.resolved {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: rgba(81, 207, 102, 0.1);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-color: var(--accent-green);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--accent-green);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Scrollbar Styling */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>::-webkit-scrollbar {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>height: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>::-webkit-scrollbar-track {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--bg-primary);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>::-webkit-scrollbar-thumb {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--border-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 4px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>::-webkit-scrollbar-thumb:hover {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--text-tertiary);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Empty State */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.empty-state {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 40px 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-tertiary);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.empty-state-icon {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 48px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>opacity: 0.3;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.empty-state-text {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>line-height: 1.6;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="root"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script type="text/babel"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const { useState, useEffect, useRef } = React;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Sample PRD content</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const SAMPLE_PRD = `# Feature: Smart Checkout Flow</p>
+<p class="p2"><br></p>
+<p class="p1">## Overview</p>
+<p class="p1">Implement a streamlined checkout process that reduces cart abandonment by 30%.</p>
+<p class="p2"><br></p>
+<p class="p1">## Success Metrics</p>
+<p class="p1">- Reduce checkout completion time by 50%</p>
+<p class="p1">- Increase conversion rate by 25%</p>
+<p class="p2"><br></p>
+<p class="p1">## User Stories</p>
+<p class="p1">As a customer, I want to complete my purchase quickly so that I can get back to my day.</p>
+<p class="p2"><br></p>
+<p class="p1">## Technical Requirements</p>
+<p class="p1">- Support all major payment methods</p>
+<p class="p1">- Mobile-responsive design</p>
+<p class="p1">- Page load time &lt; 2 seconds</p>
+<p class="p2"><br></p>
+<p class="p1">## Timeline</p>
+<p class="p1">Sprint 15 (2 weeks)</p>
+<p class="p2"><br></p>
+<p class="p1">## Dependencies</p>
+<p class="p1">- Payment gateway integration</p>
+<p class="p1">- User authentication system`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Dimension to category mapping</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const DIMENSION_MAP = {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>0: 'technical',<span class="Apple-converted-space">      </span>// Technical Feasibility</p>
+<p class="p1"><span class="Apple-converted-space">            </span>1: 'stakeholder',<span class="Apple-converted-space">    </span>// Stakeholder Alignment</p>
+<p class="p1"><span class="Apple-converted-space">            </span>2: 'edge-case',<span class="Apple-converted-space">      </span>// Edge Case Coverage</p>
+<p class="p1"><span class="Apple-converted-space">            </span>3: 'privacy',<span class="Apple-converted-space">        </span>// Data Privacy</p>
+<p class="p1"><span class="Apple-converted-space">            </span>4: 'metric'<span class="Apple-converted-space">          </span>// Metric Clarity</p>
+<p class="p1"><span class="Apple-converted-space">        </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Mock insight cards data</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const MOCK_INSIGHTS = [</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                </span>id: 1,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>type: 'edge-case',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>category: 'Edge Case',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>icon: '🔵',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>title: 'What happens if the user loses internet during the checkout flow?',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>severity: 3,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dimension: 'edgeCase'</p>
+<p class="p1"><span class="Apple-converted-space">            </span>},</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                </span>id: 2,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>type: 'stakeholder',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>category: 'Stakeholder Alert',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>icon: '🟡',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>title: 'This feature impacts the Refund flow. Have you alerted the Ops team?',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>severity: 2,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dimension: 'stakeholder'</p>
+<p class="p1"><span class="Apple-converted-space">            </span>},</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                </span>id: 3,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>type: 'metric',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>category: 'Metric Gap',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>icon: '🔴',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>title: "You haven't defined a 'Failure Metric' for this experiment.",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>severity: 3,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dimension: 'metrics'</p>
+<p class="p1"><span class="Apple-converted-space">            </span>},</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                </span>id: 4,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>type: 'mental-model',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>category: 'Mental Model',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>icon: '🟣',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>title: "You're assuming users understand the difference between 'save' and 'checkout'. What if they don't?",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>severity: 2,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dimension: 'technical'</p>
+<p class="p1"><span class="Apple-converted-space">            </span>},</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                </span>id: 5,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>type: 'edge-case',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>category: 'Edge Case',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>icon: '🔵',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>title: 'How will the system handle simultaneous purchases from multiple devices?',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>severity: 2,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dimension: 'edgeCase'</p>
+<p class="p1"><span class="Apple-converted-space">            </span>},</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                </span>id: 6,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>type: 'metric',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>category: 'Metric Gap',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>icon: '🔴',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>title: 'No rollback plan defined. What happens if the new flow performs worse?',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>severity: 3,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dimension: 'metrics'</p>
+<p class="p1"><span class="Apple-converted-space">            </span>},</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                </span>id: 7,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>type: 'stakeholder',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>category: 'Stakeholder Alert',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>icon: '🟡',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>title: 'Legal team needs to review data collection policies before launch.',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>severity: 3,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dimension: 'stakeholder'</p>
+<p class="p1"><span class="Apple-converted-space">            </span>},</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                </span>id: 8,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>type: 'edge-case',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>category: 'Edge Case',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>icon: '🔵',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>title: 'What happens to abandoned carts after the checkout redesign?',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>severity: 1,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dimension: 'edgeCase'</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function SpecCheckApp() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const [prdContent, setPrdContent] = useState(SAMPLE_PRD);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const [insights, setInsights] = useState(MOCK_INSIGHTS);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const [activeFilter, setActiveFilter] = useState('all');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const [isAnalyzing, setIsAnalyzing] = useState(false);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const [radarData, setRadarData] = useState({</p>
+<p class="p1"><span class="Apple-converted-space">                </span>technical: 65,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>stakeholder: 45,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>edgeCase: 50,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>privacy: 80,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>metrics: 40</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const chartRef = useRef(null);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const chartInstance = useRef(null);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>useEffect(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (chartRef.current) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const ctx = chartRef.current.getContext('2d');</p>
+<p class="p2"><span class="Apple-converted-space">                    </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (chartInstance.current) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>chartInstance.current.destroy();</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>chartInstance.current = new Chart(ctx, {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>type: 'radar',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>data: {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>labels: ['Technical\nFeasibility', 'Stakeholder\nAlignment', 'Edge Case\nCoverage', 'Data\nPrivacy', 'Metric\nClarity'],</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>datasets: [{</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>label: 'Readiness Score',</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>data: [</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>radarData.technical,</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>radarData.stakeholder,</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>radarData.edgeCase,</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>radarData.privacy,</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>radarData.metrics</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>],</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>backgroundColor: 'rgba(74, 158, 255, 0.15)',</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>borderColor: 'rgba(74, 158, 255, 0.8)',</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>borderWidth: 2,</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>pointBackgroundColor: 'rgba(74, 158, 255, 1)',</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>pointBorderColor: '#fff',</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>pointBorderWidth: 2,</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>pointRadius: 5,</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>pointHoverRadius: 7,</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>}]</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>options: {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>responsive: true,</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>maintainAspectRatio: true,</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>onClick: (event, elements) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>if (elements.length &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>const index = elements[0].index;</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>const dimensionType = DIMENSION_MAP[index];</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>handleRadarClick(dimensionType);</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>scales: {</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>r: {</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>min: 0,</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>max: 100,</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>beginAtZero: true,</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>ticks: {</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>stepSize: 25,</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>color: '#6b7687',</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>backdropColor: 'transparent',</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>font: {</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>size: 10,</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>family: 'JetBrains Mono'</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>grid: {</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>color: '#2a3444',</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>circular: true</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>pointLabels: {</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>color: '#9ba5b8',</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>font: {</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>size: 11,</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>family: 'DM Sans',</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>weight: '500'</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>padding: 15</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>plugins: {</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>legend: {</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>display: false</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>tooltip: {</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>backgroundColor: '#1a2030',</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>titleColor: '#e8edf4',</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>bodyColor: '#9ba5b8',</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>borderColor: '#2a3444',</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>borderWidth: 1,</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>padding: 12,</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>displayColors: false,</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>titleFont: {</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>size: 12,</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>family: 'DM Sans',</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>weight: '600'</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>bodyFont: {</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>size: 11,</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>family: 'DM Sans'</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>callbacks: {</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>afterBody: () =&gt; ['', 'Click to filter related insights']</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>return () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (chartInstance.current) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>chartInstance.current.destroy();</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>};</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}, [radarData]);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const handleRadarClick = (dimensionType) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Map dimension to card type</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const filterMap = {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>'technical': 'mental-model',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>'stakeholder': 'stakeholder',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>'edgeCase': 'edge-case',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>'privacy': 'all', // No specific privacy cards in mock data</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>'metric': 'metric'</p>
+<p class="p1"><span class="Apple-converted-space">                </span>};</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>const newFilter = filterMap[dimensionType] || 'all';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>setActiveFilter(activeFilter === newFilter ? 'all' : newFilter);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const calculateOverallScore = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const avg = Object.values(radarData).reduce((a, b) =&gt; a + b, 0) / Object.values(radarData).length;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>return Math.round(avg);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const getScoreStatus = (score) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (score &gt;= 80) return 'Launch Ready';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (score &gt;= 60) return 'Almost There';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (score &gt;= 40) return 'Needs Work';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>return 'High Risk';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const toggleCardStatus = (id) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>setInsights(insights.map(insight =&gt;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>insight.id === id<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>? { ...insight, status: insight.status === 'resolved' ? 'pending' : 'resolved' }</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>: insight</p>
+<p class="p1"><span class="Apple-converted-space">                </span>));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Simulate improvement in radar when resolving cards</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const card = insights.find(i =&gt; i.id === id);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (card &amp;&amp; card.status === 'pending') {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>setRadarData(prev =&gt; ({</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>...prev,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>[card.dimension]: Math.min(100, prev[card.dimension] + 12)</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}));</p>
+<p class="p1"><span class="Apple-converted-space">                </span>} else if (card &amp;&amp; card.status === 'resolved') {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>setRadarData(prev =&gt; ({</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>...prev,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>[card.dimension]: Math.max(0, prev[card.dimension] - 12)</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}));</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const handleAnalyze = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>setIsAnalyzing(true);</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// DEMO VERSION: Smart mock AI analysis based on PRD content</p>
+<p class="p1"><span class="Apple-converted-space">                </span>setTimeout(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const newInsights = generateMockInsights(prdContent);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>setInsights(newInsights);</p>
+<p class="p2"><span class="Apple-converted-space">                    </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// Recalculate radar based on new insights</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const radarUpdate = calculateRadarFromInsights(newInsights);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>setRadarData(radarUpdate);</p>
+<p class="p2"><span class="Apple-converted-space">                    </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>setIsAnalyzing(false);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}, 2000);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const generateMockInsights = (prdText) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const insights = [];</p>
+<p class="p1"><span class="Apple-converted-space">                </span>let id = 1;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const text = prdText.toLowerCase();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Edge Case Detection</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (text.includes('checkout') || text.includes('payment')) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>insights.push({</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>id: id++,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>type: 'edge-case',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>category: 'Edge Case',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>icon: '🔵',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>title: 'What happens if the user loses internet during the checkout flow?',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>severity: 3,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>dimension: 'edgeCase'</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>insights.push({</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>id: id++,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>type: 'edge-case',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>category: 'Edge Case',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>icon: '🔵',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>title: 'How will the system handle simultaneous purchases from multiple devices?',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>severity: 2,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>dimension: 'edgeCase'</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (text.includes('user') || text.includes('customer')) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>insights.push({</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>id: id++,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>type: 'edge-case',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>category: 'Edge Case',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>icon: '🔵',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>title: 'What happens for users with accessibility needs (screen readers, keyboard navigation)?',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>severity: 2,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>dimension: 'edgeCase'</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Stakeholder Detection</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (text.includes('refund') || text.includes('ops') || text.includes('support')) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>insights.push({</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>id: id++,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>type: 'stakeholder',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>category: 'Stakeholder Alert',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>icon: '🟡',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>title: 'This feature impacts the Refund flow. Have you alerted the Ops team?',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>severity: 2,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>dimension: 'stakeholder'</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (text.includes('legal') || text.includes('privacy') || text.includes('data')) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>insights.push({</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>id: id++,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>type: 'stakeholder',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>category: 'Stakeholder Alert',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>icon: '🟡',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>title: 'Legal team needs to review data collection policies before launch.',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>severity: 3,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>dimension: 'stakeholder'</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (text.includes('payment') || text.includes('gateway') || text.includes('authentication')) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>insights.push({</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>id: id++,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>type: 'stakeholder',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>category: 'Stakeholder Alert',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>icon: '🟡',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>title: 'Have you coordinated the payment gateway integration timeline with the Security team?',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>severity: 2,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>dimension: 'stakeholder'</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Metric Gaps</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (!text.includes('failure metric') &amp;&amp; !text.includes('fallback')) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>insights.push({</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>id: id++,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>type: 'metric',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>category: 'Metric Gap',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>icon: '🔴',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>title: "You haven't defined a 'Failure Metric' for this experiment.",</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>severity: 3,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>dimension: 'metrics'</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (!text.includes('rollback') &amp;&amp; !text.includes('revert')) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>insights.push({</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>id: id++,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>type: 'metric',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>category: 'Metric Gap',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>icon: '🔴',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>title: 'No rollback plan defined. What happens if the new flow performs worse?',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>severity: 3,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>dimension: 'metrics'</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (text.includes('metric') || text.includes('kpi')) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>insights.push({</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>id: id++,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>type: 'metric',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>category: 'Metric Gap',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>icon: '🔴',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>title: 'Success metrics focus on outputs, not outcomes. How does this tie to revenue?',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>severity: 2,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>dimension: 'metrics'</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Mental Models</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (text.includes('assume') || text.includes('expect')) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>insights.push({</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>id: id++,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>type: 'mental-model',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>category: 'Mental Model',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>icon: '🟣',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>title: "You're making assumptions about user behavior. Have you validated these with user research?",</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>severity: 2,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>dimension: 'technical'</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (text.includes('quick') || text.includes('fast') || text.includes('streamline')) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>insights.push({</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>id: id++,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>type: 'mental-model',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>category: 'Mental Model',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>icon: '🟣',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>title: "You're assuming faster = better. What if users need time to review before purchasing?",</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>severity: 2,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>dimension: 'technical'</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Technical Feasibility</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (text.includes('mobile') || text.includes('responsive')) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>insights.push({</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>id: id++,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>type: 'mental-model',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>category: 'Mental Model',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>icon: '🟣',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>title: 'Mobile-responsive is mentioned but not tablet or desktop breakpoints. Define all viewport sizes.',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>severity: 1,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>dimension: 'technical'</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Ensure at least a few insights if PRD is very minimal</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (insights.length === 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>insights.push(</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>id: id++,</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>type: 'metric',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>category: 'Metric Gap',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>icon: '🔴',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>title: 'PRD lacks clear success metrics. How will you measure if this feature succeeded?',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>severity: 3,</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>dimension: 'metrics'</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>id: id++,</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>type: 'edge-case',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>category: 'Edge Case',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>icon: '🔵',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>title: 'No edge cases documented. What happens when things go wrong?',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>severity: 3,</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>dimension: 'edgeCase'</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>id: id++,</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>type: 'stakeholder',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>category: 'Stakeholder Alert',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>icon: '🟡',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>title: 'Who are the key stakeholders for this feature? Have you identified them all?',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>severity: 2,</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>status: 'pending',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>dimension: 'stakeholder'</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>return insights;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const calculateRadarFromInsights = (insights) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const dimensionCounts = {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>technical: 0,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>stakeholder: 0,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>edgeCase: 0,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>privacy: 0,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>metrics: 0</p>
+<p class="p1"><span class="Apple-converted-space">                </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>insights.forEach(insight =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (insight.status === 'pending') {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>dimensionCounts[insight.dimension]++;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Convert counts to scores (more issues = lower score)</p>
+<p class="p1"><span class="Apple-converted-space">                </span>return {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>technical: Math.max(30, 100 - (dimensionCounts.technical * 15)),</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>stakeholder: Math.max(30, 100 - (dimensionCounts.stakeholder * 15)),</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>edgeCase: Math.max(30, 100 - (dimensionCounts.edgeCase * 15)),</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>privacy: 85, // Baseline high since we don't detect privacy issues in mock</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>metrics: Math.max(30, 100 - (dimensionCounts.metrics * 15))</p>
+<p class="p1"><span class="Apple-converted-space">                </span>};</p>
+<p class="p1"><span class="Apple-converted-space">            </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const handleExport = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const reportWindow = window.open('', '_blank');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const overallScore = calculateOverallScore();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const scoreStatus = getScoreStatus(overallScore);</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>reportWindow.document.write(`</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;!DOCTYPE html&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;html&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;title&gt;Spec-Check Readiness Report&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>h1 { color: #0a0e17; border-bottom: 3px solid #4a9eff; padding-bottom: 10px; }</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>.score { font-size: 48px; color: #4a9eff; font-weight: bold; }</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>.status { color: #666; font-size: 18px; }</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>.metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin: 30px 0; }</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>.metric { background: #f5f5f5; padding: 15px; border-radius: 8px; }</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>.metric-name { font-weight: bold; color: #333; margin-bottom: 5px; }</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>.metric-score { font-size: 24px; color: #4a9eff; }</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>.insights { margin-top: 30px; }</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>.insight { background: #fff; border-left: 4px solid #4a9eff; padding: 15px; margin: 10px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>.insight.resolved { opacity: 0.5; border-color: #51cf66; }</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;body&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h1&gt;Spec-Check Readiness Report&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="score"&gt;${overallScore}%&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="status"&gt;${scoreStatus}&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                        </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="metrics"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="metric"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div class="metric-name"&gt;Technical Feasibility&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div class="metric-score"&gt;${radarData.technical}%&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="metric"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div class="metric-name"&gt;Stakeholder Alignment&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div class="metric-score"&gt;${radarData.stakeholder}%&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="metric"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div class="metric-name"&gt;Edge Case Coverage&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div class="metric-score"&gt;${radarData.edgeCase}%&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="metric"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div class="metric-name"&gt;Data Privacy&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div class="metric-score"&gt;${radarData.privacy}%&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="metric"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div class="metric-name"&gt;Metric Clarity&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div class="metric-score"&gt;${radarData.metrics}%&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                        </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="insights"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;h2&gt;Insights Summary&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>${insights.map(i =&gt; `</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div class="insight ${i.status}"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>&lt;strong&gt;${i.category}:&lt;/strong&gt; ${i.title}</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>${i.status === 'resolved' ? ' &lt;span style="color: #51cf66;"&gt;✓ Resolved&lt;/span&gt;' : ''}</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>`).join('')}</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                        </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p style="margin-top: 40px; color: #999; font-size: 12px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>Generated by Spec-Check on ${new Date().toLocaleDateString()}</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/body&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/html&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>`);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const overallScore = calculateOverallScore();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const scoreStatus = getScoreStatus(overallScore);</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const filteredInsights = insights.filter(i =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (activeFilter === 'all') return i.status === 'pending';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>return i.status === 'pending' &amp;&amp; i.type === activeFilter;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div className="app-container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;header className="app-header"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div className="app-logo"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>Spec&lt;span&gt;-Check&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div className="header-actions"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;button className="header-btn" onClick={handleExport}&gt;📊 Export Report&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/header&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div className="main-content"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div className="editor-pane"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div className="editor-header"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div className="editor-title"&gt;Product Requirements Document&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div className="editor-content"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;textarea</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>className="markdown-editor"</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>value={prdContent}</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>onChange={(e) =&gt; setPrdContent(e.target.value)}</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>placeholder="Start writing your PRD here... The AI will analyze it in real-time."</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;aside className="sidebar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div className="analyze-section"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;button<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>className={`analyze-btn ${isAnalyzing ? 'analyzing' : ''}`}</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>onClick={handleAnalyze}</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>disabled={isAnalyzing}</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>{isAnalyzing ? (</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&lt;&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>&lt;span className="spinner"&gt;&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>Analyzing PRD...</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&lt;/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>) : (</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&lt;&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>🔍 Analyze Document</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&lt;/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>)}</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div className="sidebar-section"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div className="overall-score"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>&lt;div className="score-label"&gt;Readiness Score&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>&lt;div className="score-value"&gt;{overallScore}%&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>&lt;div className="score-status"&gt;{scoreStatus}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div className="section-title"&gt;Readiness Radar&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div className="radar-container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>&lt;canvas ref={chartRef} className="radar-canvas"&gt;&lt;/canvas&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>&lt;div className="radar-hint"&gt;Click axes to filter insights&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div className="cards-section"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div className="section-header"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>&lt;div className="section-title"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>Insights ({filteredInsights.length})</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>&lt;div className="filter-controls"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&lt;button<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>className={`filter-btn ${activeFilter === 'all' ? 'active' : ''}`}</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>onClick={() =&gt; setActiveFilter('all')}</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>All</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&lt;button<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>className={`filter-btn ${activeFilter === 'edge-case' ? 'active' : ''}`}</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>onClick={() =&gt; setActiveFilter('edge-case')}</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>Edge</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&lt;button<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>className={`filter-btn ${activeFilter === 'stakeholder' ? 'active' : ''}`}</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>onClick={() =&gt; setActiveFilter('stakeholder')}</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>Stake</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&lt;button<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>className={`filter-btn ${activeFilter === 'metric' ? 'active' : ''}`}</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>onClick={() =&gt; setActiveFilter('metric')}</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>Metric</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                                </span></p>
+<p class="p1"><span class="Apple-converted-space">                                </span>{filteredInsights.length &gt; 0 ? (</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>&lt;div className="cards-container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>{filteredInsights.map(insight =&gt; (</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>&lt;InsightCard</p>
+<p class="p1"><span class="Apple-converted-space">                                                </span>key={insight.id}</p>
+<p class="p1"><span class="Apple-converted-space">                                                </span>insight={insight}</p>
+<p class="p1"><span class="Apple-converted-space">                                                </span>onToggle={toggleCardStatus}</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>))}</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>) : (</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>&lt;div className="empty-state"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&lt;div className="empty-state-icon"&gt;✅&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&lt;div className="empty-state-text"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>{activeFilter === 'all'<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                                                </span>? "All insights addressed!\nYour PRD is looking solid."</p>
+<p class="p1"><span class="Apple-converted-space">                                                </span>: `No pending ${activeFilter} insights`</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>)}</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/aside&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function InsightCard({ insight, onToggle }) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div className={`insight-card ${insight.type}`}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div className="card-header"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;span className="card-icon"&gt;{insight.icon}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div className="card-meta"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div className="card-type"&gt;{insight.category}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div className="card-title"&gt;{insight.title}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div className="card-severity"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>{[1, 2, 3].map(level =&gt; (</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;span</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>key={level}</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>className={`severity-dot ${level &lt;= insight.severity ? 'active' : ''}`}</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>))}</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div className="card-actions"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>className={`card-action-btn ${insight.status === 'resolved' ? 'resolved' : ''}`}</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>onClick={() =&gt; onToggle(insight.id)}</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>{insight.status === 'resolved' ? '✓ Resolved' : 'Mark Resolved'}</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button className="card-action-btn"&gt;Park&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>ReactDOM.render(&lt;SpecCheckApp /&gt;, document.getElementById('root'));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
