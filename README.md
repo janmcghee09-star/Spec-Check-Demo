@@ -5,8 +5,6 @@ Working demo version of a doc checker
 
 A real-time AI-powered tool that red-teams Product Requirements Documents (PRDs) to identify blind spots, edge cases, and stakeholder misalignments **before** they derail your sprint.
 
-![Spec-Check Preview](https://via.placeholder.com/800x450/0a0e17/4a9eff?text=Spec-Check+Preview)
-
 ---
 
 ## 📦 Two Versions Included
