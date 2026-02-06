@@ -10,10 +10,10 @@ A real-time AI-powered tool that red-teams Product Requirements Documents (PRDs)
 ## 📦 Two Versions Included
 
 ### 1. **Demo Version** (`index.html`)
-**USING THIS FOR:** Portfolio demos, interviews, GitHub Pages hosting
+**I AM USING THIS FOR:** Portfolio demos, interviews, hosting the preview demo on GitHub Pages
 
 ✅ **Features:**
-- Smart keyword-based mock analysis
+- Smart keyword-based mock analysis (NO API to Claude)
 - Instant results (no API needed)
 - Works offline
 - Free forever
