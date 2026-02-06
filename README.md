@@ -46,12 +46,13 @@ A real-time AI-powered tool that red-teams Product Requirements Documents (PRDs)
    - Copy your key (starts with `sk-ant-api03-...`)
 
 2. **Open the API Version:**
+   - Download the `spec-check-assistant-api.html` file
    - Open `spec-check-assistant-api.html` in your browser
    - Click "⚙️ API Key" in the header
    - Paste your API key
    - Click "Save API Key"
 
-3. **Use It:**
+4. **Use It:**
    - Write or paste your PRD
    - Click "🔍 Analyze Document"
    - Get real AI insights in ~3-5 seconds
