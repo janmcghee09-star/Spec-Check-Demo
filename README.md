@@ -20,7 +20,7 @@ Spec-Check uses Claude AI to conduct premortem analysis on your PRDs, identifyin
 
 ---
 
-### **Your Personal API Version** ([hosted on Vercel](https://github.com/janmcghee09-star/Spec-Check))
+### **Your Personal API Version:** ([hosted on Vercel, click here for instructions](https://github.com/janmcghee09-star/spec-check))
 **USE THIS FOR:** Your actual PM work with your own Claude API credits
 
 ✅ **Features:**
