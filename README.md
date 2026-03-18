@@ -16,7 +16,7 @@ Spec-Check uses Claude AI to conduct premortem analysis on your PRDs, identifyin
 
 ## 🚀 Try It!
 
-### **DEMO version:** [https://janmcghee09-star.github.io/Spec-Check-Demo](https://janmcghee09-star.github.io/Spec-Check-Demo/)
+### **DEMO version:** [https://janm-themodernpm.github.io/Spec-Check-Demo](https://janm-themodernpm.github.io/Spec-Check-Demo/)
 
 ---
 
